@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatterBot - Your Fun AI Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg width='60' height='60' viewBox='0 0 200 200' fill='none' xmlns='http://www.w3.org/2000/svg'><circle cx='100' cy='100' r='90' fill='#FF5D8F'/><circle cx='70' cy='80' r='15' fill='white'/><circle cx='130' cy='80' r='15' fill='white'/><circle cx='70' cy='80' r='8' fill='#333'/><circle cx='130' cy='80' r='8' fill='#333'/><path d='M70 120C83.3333 136 116.7 136 130 120' stroke='#333' stroke-width='6' stroke-linecap='round'/></svg>">
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center">
+                <div class="mascot mr-3">
+                    <svg width="60" height="60" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="100" cy="100" r="90" fill="#FF5D8F"></circle>
+                        <circle cx="70" cy="80" r="15" fill="white"></circle>
+                        <circle cx="130" cy="80" r="15" fill="white"></circle>
+                        <circle cx="70" cy="80" r="8" fill="#333"></circle>
+                        <circle cx="130" cy="80" r="8" fill="#333"></circle>
+                        <path d="M70 120C83.3333 136 116.7 136 130 120" stroke="#333" stroke-width="6" stroke-linecap="round"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-extrabold text-gray-800">ChatterBot</h1>
+                    <p class="text-sm text-gray-600">Powered by GROQ AI</p>
+                </div>
+            </div>
+            <div class="flex space-x-2">
+                <button id="settings-button" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </button>
+                <button class="bg-yellow-400 hover:bg-yellow-500 text-gray-800 p-2 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Chat Container -->
+        <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+            <!-- Chat Header -->
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-4 text-white flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center mr-3">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#FF5D8F"></path>
+                            <circle cx="8" cy="10" r="2" fill="white"></circle>
+                            <circle cx="16" cy="10" r="2" fill="white"></circle>
+                            <path d="M8 15C9.33333 16.6667 14.6667 16.6667 16 15" stroke="white" stroke-width="2" stroke-linecap="round"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-lg">ChatterBot</h2>
+                        <div class="flex items-center text-xs text-green-200">
+                            <span class="w-2 h-2 bg-green-300 rounded-full mr-1"></span>
+                            Online
+                        </div>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button id="scroll-down-button" class="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors" title="Scroll Down">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <button id="scroll-up-button" class="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors" title="Scroll Up">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                        </svg>
+                    </button>
+                    <button id="clear-history-button" class="p-2 hover:bg-red-500 hover:text-white rounded-full transition-colors" title="Clear Chat History">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Chat Messages -->
+            <div id="chat-messages" class="p-4 h-96 overflow-y-auto bg-gray-50">
+                <!-- Welcome Message will be added by JS -->
+            </div>
+            
+            <!-- Suggestions -->
+            <div class="p-3 bg-gray-100 border-t border-gray-200">
+                <p class="text-xs text-gray-500 mb-2 font-medium">SUGGESTED QUESTIONS:</p>
+                <div class="flex flex-wrap gap-2">
+                    <button class="suggestion-pill bg-blue-500 text-white px-3 py-1 rounded-full text-sm hover:bg-blue-600 transition-colors">Tell me a fun fact</button>
+                    <button class="suggestion-pill bg-pink-500 text-white px-3 py-1 rounded-full text-sm hover:bg-pink-600 transition-colors">What's the weather like?</button>
+                    <button class="suggestion-pill bg-yellow-400 text-gray-800 px-3 py-1 rounded-full text-sm hover:bg-yellow-500 transition-colors">Recommend a book</button>
+                    <button class="suggestion-pill bg-green-500 text-white px-3 py-1 rounded-full text-sm hover:bg-green-600 transition-colors">Tell me a joke</button>
+                </div>
+            </div>
+            
+            <!-- Input Area -->
+            <div class="p-4 bg-white border-t border-gray-200">
+                <div class="flex">
+                    <div class="input-container flex-grow bg-gray-100 flex items-center">
+                        <button id="emoji-button" class="p-3 text-gray-500 hover:text-gray-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </button>
+                        <input id="chat-input" type="text" placeholder="Type your message here..." class="flex-grow bg-transparent border-none focus:outline-none p-3 text-gray-700">
+                    </div>
+                    <button id="send-button" class="send-button ml-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white p-3 rounded-full hover:shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transition-transform duration-300 transform hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="text-xs text-gray-500 mt-2 text-center">
+                    Powered by GROQ AI • Messages are processed securely
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Settings</h3>
+                <button id="close-settings" class="text-gray-500 hover:text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-3">
+                    Theme
+                </label>
+                <div class="flex space-x-3">
+                    <button class="theme-option bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm" data-theme="default">Default</button>
+                    <button class="theme-option bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm" data-theme="green">Green</button>
+                    <button class="theme-option bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm" data-theme="purple">Purple</button>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-3">
+                    Chat Bubble Style
+                </label>
+                <div class="flex space-x-3">
+                    <button class="bubble-style-option bg-blue-100 border border-blue-300 px-4 py-2 rounded-lg text-sm" data-style="rounded">Rounded</button>
+                    <button class="bubble-style-option bg-blue-100 border border-blue-300 px-4 py-2 rounded-lg text-sm" data-style="square">Square</button>
+                    <button class="bubble-style-option bg-blue-100 border border-blue-300 px-4 py-2 rounded-lg text-sm" data-style="modern">Modern</button>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-3">
+                    Font Size
+                </label>
+                <div class="flex space-x-3">
+                    <button class="font-size-option bg-blue-100 border border-blue-300 px-4 py-2 rounded-lg text-sm" data-size="small">Small</button>
+                    <button class="font-size-option bg-blue-100 border border-blue-300 px-4 py-2 rounded-lg text-sm" data-size="medium">Medium</button>
+                    <button class="font-size-option bg-blue-100 border border-blue-300 px-4 py-2 rounded-lg text-sm" data-size="large">Large</button>
+                </div>
+            </div>
+            
+            <div class="flex justify-end">
+                <button id="save-settings" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emoji Picker -->
+    <div id="emoji-picker" class="fixed bg-white rounded-xl p-4 shadow-2xl z-50 hidden" style="width: 320px; height: 200px; overflow-y: auto;">
+        <div class="grid grid-cols-8 gap-2">
+            <!-- Emojis will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Clear History Confirmation Modal -->
+    <div id="clear-history-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <h3 class="text-xl font-bold mb-4">Clear Chat History</h3>
+            <p class="mb-4">Are you sure you want to clear the chat history? This action cannot be undone.</p>
+            <div class="flex justify-end">
+                <button id="confirm-clear-history" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg mr-2">Clear History</button>
+                <button id="cancel-clear-history" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="groq-api.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
