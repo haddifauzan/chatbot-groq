@@ -89,13 +89,10 @@
             </div>
             
             <!-- Suggestions -->
-            <div class="p-3 bg-gray-100 border-t border-gray-200">
+            <div class="p-2 bg-gray-100 border-t border-gray-200 overflow-x-auto">
                 <p class="text-xs text-gray-500 mb-2 font-medium">SUGGESTED QUESTIONS:</p>
-                <div class="flex flex-wrap gap-2">
-                    <button class="suggestion-pill bg-blue-500 text-white px-3 py-1 rounded-full text-sm hover:bg-blue-600 transition-colors">Tell me a fun fact</button>
-                    <button class="suggestion-pill bg-pink-500 text-white px-3 py-1 rounded-full text-sm hover:bg-pink-600 transition-colors">What's the weather like?</button>
-                    <button class="suggestion-pill bg-yellow-400 text-gray-800 px-3 py-1 rounded-full text-sm hover:bg-yellow-500 transition-colors">Recommend a book</button>
-                    <button class="suggestion-pill bg-green-500 text-white px-3 py-1 rounded-full text-sm hover:bg-green-600 transition-colors">Tell me a joke</button>
+                <div id="suggestion-container" class="flex flex-nowrap gap-2 overflow-x-auto">
+                    <!-- Suggested items will be added here -->
                 </div>
             </div>
             

@@ -67,17 +67,17 @@ document.addEventListener('DOMContentLoaded', function() {
     
     
     function displayRandomSuggestions() {
-        const suggestionContainer = document.querySelector('.flex-wrap');
+        const suggestionContainer = document.querySelector('#suggestion-container');
         suggestionContainer.innerHTML = ''; // Clear existing suggestions
-    
+
         // Shuffle suggestions and select a few
         const shuffledSuggestions = suggestions.sort(() => 0.5 - Math.random()).slice(0, 4);
-    
+
         shuffledSuggestions.forEach(suggestion => {
             const button = document.createElement('button');
             const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500', 'bg-blue-500', 'bg-indigo-500', 'bg-purple-500'];
             const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            button.className = `suggestion-pill ${randomColor} text-white px-3 py-1 rounded-full text-sm hover:${randomColor} hover:bg-opacity-80 transition-colors`;
+            button.className = `suggestion-pill ${randomColor} text-white px-2 py-1 rounded-full text-xs hover:${randomColor} hover:bg-opacity-80 transition-colors`;
             button.textContent = suggestion;
             button.addEventListener('click', function() {
                 chatInput.value = suggestion;
