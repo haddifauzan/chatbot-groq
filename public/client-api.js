@@ -15,7 +15,7 @@ class ClientAPI {
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
+                const errorData = await response.json().catch(() => ({}));
                 throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
             }
 
@@ -39,29 +39,24 @@ class ClientAPI {
                 throw new Error('Image size too large. Maximum 10MB.');
             }
 
-            // Validate image by loading it
-            const isValidImage = await new Promise(resolve => {
-                const img = new Image();
-                img.onload = () => resolve(true);
-                img.onerror = () => resolve(false);
-                img.src = URL.createObjectURL(file);
-            });
+            // Convert to base64
+            const base64Data = await this.fileToBase64(file);
+            const imageData = `data:${file.type};base64,${base64Data}`;
 
-            if (!isValidImage) {
-                throw new Error('Invalid image file.');
-            }
-
-            // Upload to server
-            const formData = new FormData();
-            formData.append('image', file);
-
+            // Send to server for processing
             const response = await fetch(`${this.baseUrl}/api/upload-image`, {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    imageData,
+                    mimeType: file.type
+                })
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
+                const errorData = await response.json().catch(() => ({}));
                 throw new Error(errorData.error || `Upload failed: ${response.status}`);
             }
 
@@ -79,6 +74,18 @@ class ClientAPI {
         } catch (error) {
             throw new Error(`Failed to process image: ${error.message}`);
         }
+    }
+
+    fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                const base64 = reader.result.split(',')[1];
+                resolve(base64);
+            };
+            reader.onerror = error => reject(error);
+        });
     }
 
     detectLanguage(text) {

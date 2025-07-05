@@ -1,39 +1,39 @@
-import formidable from 'formidable';
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
-  }
+    // Enable CORS
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  const form = formidable({ maxFileSize: 10 * 1024 * 1024 }); // 10MB
-
-  form.parse(req, (err, fields, files) => {
-    if (err) {
-      console.error('Upload error:', err);
-      return res.status(400).json({ error: 'File upload failed' });
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
     }
 
-    const file = files.image;
-    if (!file) {
-      return res.status(400).json({ error: 'No image provided' });
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const mimeType = file.mimetype || 'image/png';
-    const fs = require('fs');
-    const imageBuffer = fs.readFileSync(file.filepath);
-    const base64 = imageBuffer.toString('base64');
-    const dataUrl = `data:${mimeType};base64,${base64}`;
+    try {
+        const { imageData, mimeType } = req.body;
+        
+        if (!imageData || !mimeType) {
+            return res.status(400).json({ error: 'Image data and mime type required' });
+        }
 
-    res.status(200).json({
-      imageData: dataUrl,
-      mimeType,
-      size: file.size
-    });
-  });
+        // Validate image type
+        const supportedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/jpg'];
+        if (!supportedTypes.includes(mimeType)) {
+            return res.status(400).json({ error: 'Unsupported image format' });
+        }
+
+        // Return the processed image data
+        res.status(200).json({ 
+            imageData,
+            mimeType,
+            processed: true
+        });
+    } catch (error) {
+        console.error('Image upload error:', error);
+        res.status(500).json({ error: error.message });
+    }
 }

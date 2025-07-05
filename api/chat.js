@@ -1,22 +1,33 @@
 import GroqAPI from '../groq-api.js';
 
-const groqApi = new GroqAPI(process.env.GROQ_API_KEY);
-
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
-  }
+    // Enable CORS
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  try {
-    const { messages, options = {} } = req.body;
-    if (!messages || messages.length === 0) {
-      return res.status(400).json({ error: 'No messages provided' });
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
     }
 
-    const response = await groqApi.generateResponse(messages, options);
-    res.status(200).json({ response });
-  } catch (error) {
-    console.error('API Chat Error:', error);
-    res.status(500).json({ error: error.message });
-  }
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method not allowed' });
+    }
+
+    try {
+        const { messages, options = {} } = req.body;
+        
+        if (!messages || messages.length === 0) {
+            return res.status(400).json({ error: 'No messages provided' });
+        }
+
+        const groqApi = new GroqAPI(process.env.GROQ_API_KEY);
+        const response = await groqApi.generateResponse(messages, options);
+        
+        res.status(200).json({ response });
+    } catch (error) {
+        console.error('Chat API Error:', error);
+        res.status(500).json({ error: error.message });
+    }
 }
