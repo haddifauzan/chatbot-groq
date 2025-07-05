@@ -434,6 +434,8 @@ body {
     color: white;
     border-bottom-right-radius: 4px;
     margin-left: auto;
+    width: fit-content;
+    max-width: 80%;
 }
 
 .suggestion-pill {
@@ -675,15 +677,84 @@ code {
     word-break: break-word;
 }
 
-/* Loading animation */
+/* Image upload styling */
+.image-upload-label {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.image-upload-label:hover {
+    transform: scale(1.1);
+}
+
+#image-preview-container {
+    transition: all 0.3s ease;
+}
+
+#image-preview {
+    transition: all 0.3s ease;
+}
+
+/* Drag and drop styling */
+.drag-highlight {
+    position: relative;
+}
+
+.drag-highlight::after {
+    content: 'Drop image here';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(59, 130, 246, 0.2);
+    border: 3px dashed #3b82f6;
+    border-radius: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    color: #3b82f6;
+    font-weight: bold;
+    z-index: 10;
+}
+
+/* Image in message styling */
+.chat-bubble img {
+    margin-top: 0.5rem;
+    border-radius: 0.5rem;
+    max-width: 100%;
+    max-height: 200px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Override any existing chat bubble styling for images */
+.chat-bubble.user-bubble img {
+    display: block;
+    margin-top: 8px;
+}
+
+.chat-bubble.bot-bubble img {
+    display: block;
+    margin-top: 8px;
+}
+
+/* Loading spinner animation */
 .loading-spinner {
     display: inline-block;
-    width: 20px;
-    height: 20px;
-    border: 3px solid rgba(255, 93, 143, 0.3);
+    width: 30px;
+    height: 30px;
+    border: 3px solid rgba(59, 130, 246, 0.3);
     border-radius: 50%;
-    border-top-color: #FF5D8F;
+    border-top-color: #3b82f6;
     animation: spin 1s linear infinite;
+}
+
+/* Image indicator in messages */
+.image-indicator {
+    display: inline-block;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 
@@ -696,11 +767,11 @@ code {
 }
 
 .bubble-style-modern .chat-bubble {
-    border-radius: 18px 18px 4px 18px;
+    border-radius: 18px 18px 18px 4px;
 }
 
 .bubble-style-modern .user-bubble {
-    border-radius: 18px 18px 18px 4px;
+    border-radius: 18px 18px 4px 18px;
 }
 
 /* Font size options */
