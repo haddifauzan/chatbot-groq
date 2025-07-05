@@ -4,7 +4,7 @@ class GroqAPI {
     constructor(apiKey) {
         this.apiKey = apiKey;
         this.defaultModel = 'llama-3.3-70b-versatile';
-        this.visionModel = 'llama-3.2-90b-vision-preview';
+        this.visionModel = 'meta-llama/llama-4-scout-17b-16e-instruct';
         this.apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
         this.supportedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/jpg'];
         this.maxImageSize = 10 * 1024 * 1024; // 10MB
