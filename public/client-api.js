@@ -39,37 +39,18 @@ class ClientAPI {
                 throw new Error('Image size too large. Maximum 10MB.');
             }
 
-            // Convert to base64
+            // Convert to base64 in browser
             const base64Data = await this.fileToBase64(file);
             const imageData = `data:${file.type};base64,${base64Data}`;
-
-            // Send to server for processing
-            const response = await fetch(`${this.baseUrl}/api/upload-image`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    imageData,
-                    mimeType: file.type
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error || `Upload failed: ${response.status}`);
-            }
-
-            const data = await response.json();
             
-            // Cache the image data
-            const imageId = Date.now().toString(36) + Math.random().toString(36).substr(2);
-            this.imageCache[imageId] = data.imageData;
+            // Cache the image data locally
+            const imageId = Date.now().toString(36) + Math.random().toString(36).substring(2);
+            this.imageCache[imageId] = imageData;
 
             return { 
                 imageId, 
-                imageData: data.imageData, 
-                mimeType: data.mimeType 
+                imageData: imageData, 
+                mimeType: file.type 
             };
         } catch (error) {
             throw new Error(`Failed to process image: ${error.message}`);

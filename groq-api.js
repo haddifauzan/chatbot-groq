@@ -1,42 +1,36 @@
-import fetch from 'node-fetch';
+// Use native fetch if available (Node 18+), fallback to node-fetch if needed
+const getFetch = () => {
+    if (typeof fetch !== 'undefined') return fetch;
+    return import('node-fetch').then(mod => mod.default);
+};
 
 class GroqAPI {
     constructor(apiKey) {
         this.apiKey = apiKey;
         this.defaultModel = 'llama-3.3-70b-versatile';
-        this.visionModel = 'llama-3.2-90b-vision-preview';
+        this.visionModel = 'llama-3.2-11b-vision-preview';
         this.apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
         this.supportedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/jpg'];
         this.maxImageSize = 10 * 1024 * 1024; // 10MB
     }
 
-    detectLanguage(text) {
-        if (!text) return 'en';
-        const normalizedText = text.toLowerCase();
-        if (/(apa|siapa|dimana|kapan|mengapa|kenapa|berapa|bagaimana|tolong|bisa|mohon|boleh|apakah|terima kasih|selamat)/i.test(normalizedText)) return 'id';
-        if (/(di mana|bila)/i.test(normalizedText)) return 'ms';
-        return 'en';
-    }
-
-    getSystemPrompt(language = 'en') {
-        const prompts = {
-            en: `You are ChatterBot, a friendly and helpful AI assistant. Provide clear, concise answers in English. Use simple language unless asked for technical details. If an image is provided, describe and analyze it if relevant to the user's question. If unsure, say so.`,
-            id: `Kamu adalah ChatterBot, asisten AI yang ramah dan membantu. Berikan jawaban yang jelas dan mudah dipahami dalam Bahasa Indonesia. Gunakan bahasa sederhana kecuali diminta detail teknis. Jika ada gambar, deskripsikan dan analisis jika relevan dengan pertanyaan pengguna. Jika tidak yakin, akui itu.`,
-            ms: `Anda adalah ChatterBot, pembantu AI yang mesra. Berikan jawapan yang jelas dalam Bahasa Melayu. Gunakan bahasa mudah kecuali diminta butiran teknikal. Jika ada gambar, terangkan dan analisis jika berkaitan dengan soalan pengguna. Jika tidak pasti, nyatakan demikian.`
-        };
-        return prompts[language] || prompts.en;
+    getSystemPrompt() {
+        return `You are ChatterBot, a friendly, intelligent, and helpful AI assistant. Provide clear, accurate, and concise answers in the language the user speaks to you in. Use markdown formatting and KaTeX syntax for math equations when helpful. If an image is provided, analyze and describe it accurately according to the user's request.`;
     }
 
     async generateResponse(messages, options = {}) {
+        if (!this.apiKey) {
+            throw new Error('GROQ_API_KEY environment variable is not set. Please add it to your environment variables.');
+        }
+
         if (!messages || messages.length === 0) {
             throw new Error('No messages provided');
         }
 
         try {
+            const fetchFn = await getFetch();
             const messagesCopy = JSON.parse(JSON.stringify(messages));
-            const lastUserMessage = messagesCopy.filter(m => m.role === 'user').pop()?.content || '';
-            const language = this.detectLanguage(lastUserMessage);
-            const systemPrompt = this.getSystemPrompt(language);
+            const systemPrompt = options.systemPrompt || this.getSystemPrompt();
             
             let currentModel = options.model || this.defaultModel;
             
@@ -45,21 +39,27 @@ class GroqAPI {
                 currentModel = this.visionModel;
                 const lastUserMessageIndex = messagesCopy.map(m => m.role).lastIndexOf('user');
                 if (lastUserMessageIndex !== -1) {
-                    const userText = messagesCopy[lastUserMessageIndex].content || '';
+                    let userText = messagesCopy[lastUserMessageIndex].content || '';
+                    if (typeof userText !== 'string') {
+                        userText = typeof userText === 'object' ? JSON.stringify(userText) : String(userText);
+                    }
+                    userText = userText.replace(' [Image attached]', '').trim();
+                    
                     messagesCopy[lastUserMessageIndex] = {
                         role: 'user',
                         content: [
-                            { type: 'text', text: userText.replace(' [Image attached]', '') },
+                            { type: 'text', text: userText || 'Please analyze this image.' },
                             { type: 'image_url', image_url: { url: options.imageData } }
                         ]
                     };
                 }
             }
 
-            const formattedMessages = [
-                { role: 'system', content: systemPrompt },
-                ...messagesCopy
-            ];
+            // Check if system prompt is already in messages, otherwise prepend
+            const hasSystemPrompt = messagesCopy.some(m => m.role === 'system');
+            const formattedMessages = hasSystemPrompt
+                ? messagesCopy
+                : [{ role: 'system', content: systemPrompt }, ...messagesCopy];
 
             const requestBody = {
                 model: currentModel,
@@ -70,7 +70,7 @@ class GroqAPI {
                 frequency_penalty: 0.5
             };
 
-            const response = await fetch(this.apiUrl, {
+            const response = await fetchFn(this.apiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -81,14 +81,14 @@ class GroqAPI {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error?.message || `API error: ${response.status}`);
+                throw new Error(errorData.error?.message || `Groq API error: ${response.status} ${response.statusText}`);
             }
 
             const data = await response.json();
             return data.choices?.[0]?.message?.content || 'No response content';
         } catch (error) {
             console.error('[GroqAPI Error]', error);
-            throw new Error(`Failed to generate response: ${error.message}`);
+            throw new Error(error.message);
         }
     }
 }

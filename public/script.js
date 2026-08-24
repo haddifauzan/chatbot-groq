@@ -392,7 +392,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         uploadStatusMessage.textContent = 'Processing clipboard image...';
                         
                         // Process the image using your existing API
-                        const { imageId, imageData } = await groqApi.processImage(file);
+                        const { imageId, imageData } = await clientApi.processImage(file);
                         currentImageId = imageId;
                         
                         // Display the image preview
@@ -787,7 +787,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 uploadProgressModal.classList.remove('hidden');
                 uploadStatusMessage.textContent = 'Processing image...';
                 
-                const { imageId, imageData } = await groqApi.processImage(file);
+                const { imageId, imageData } = await clientApi.processImage(file);
                 currentImageId = imageId;
                 
                 imagePreview.src = imageData;
