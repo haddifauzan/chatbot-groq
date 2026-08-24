@@ -32,8 +32,12 @@ class GroqAPI {
             const messagesCopy = JSON.parse(JSON.stringify(messages));
             const systemPrompt = options.systemPrompt || this.getSystemPrompt();
             
-            let currentModel = options.model || this.defaultModel;
-            
+            let currentModel = options.model;
+            // Fallback to defaultModel if no model provided or if a decommissioned model is passed
+            if (!currentModel || currentModel.includes('llama-3.3') || currentModel.includes('llama3-') || currentModel.includes('llama-3.2-11b')) {
+                currentModel = this.defaultModel;
+            }
+
             // Handle image if provided
             if (options.imageData) {
                 currentModel = this.visionModel;
@@ -85,7 +89,12 @@ class GroqAPI {
             }
 
             const data = await response.json();
-            return data.choices?.[0]?.message?.content || 'No response content';
+            let content = data.choices?.[0]?.message?.content || 'No response content';
+            
+            // Remove reasoning/thinking process (<think>...</think>) from output
+            content = content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+            
+            return content || 'No response content';
         } catch (error) {
             console.error('[GroqAPI Error]', error);
             throw new Error(error.message);

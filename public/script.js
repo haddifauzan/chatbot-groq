@@ -209,6 +209,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function processMessageContent(content) {
+        if (typeof content === 'string') {
+            content = content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+        }
+
         // Escape HTML to prevent XSS
         function escapeHTML(str) {
             if (typeof str !== 'string') return '';
