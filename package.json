@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "ChatterBot server with GROQ API",
   "type": "module",
-  "scripts": {
-    "dev": "vercel dev"
-  },
   "dependencies": {
     "formidable": "^3.5.4"
   }
