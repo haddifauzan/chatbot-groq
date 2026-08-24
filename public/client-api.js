@@ -14,16 +14,24 @@ class ClientAPI {
                 body: JSON.stringify({ messages, options })
             });
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+            const contentType = response.headers.get('content-type') || '';
+            let data;
+
+            if (contentType.includes('application/json')) {
+                data = await response.json();
+            } else {
+                const text = await response.text();
+                throw new Error(`Server error (${response.status}): ${text.substring(0, 80)}... (Make sure GROQ_API_KEY is set in Vercel Environment Variables)`);
             }
 
-            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || `HTTP error! status: ${response.status}`);
+            }
+
             return data.response;
         } catch (error) {
             console.error('Client API Error:', error);
-            throw new Error(`Failed to generate response: ${error.message}`);
+            throw new Error(error.message);
         }
     }
 
